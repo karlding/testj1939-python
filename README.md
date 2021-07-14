@@ -6,7 +6,7 @@ A reimplementation of `testj1939` using Python APIs to illustrate how to use the
 
 These are various examples taken from the J1939 kickstart guide
 
-- [ ] receive without source address
+- [x] receive without source address
 
 ## Known issues
 

@@ -61,4 +61,54 @@ if __name__ == "__main__":
         help="Return after TIME (default 1) seconds",
     )
 
-    parser.parse_args()
+    args = parser.parse_args()
+
+    # TODO: Port over interface parsing
+    # For now, assume the interface is called 'vcan0'
+    sockname = "vcan0", socket.J1939_NO_NAME, socket.J1939_NO_PGN, 0x80
+
+    with socket.socket(socket.PF_CAN, socket.SOCK_DGRAM, socket.CAN_J1939) as s:
+        if args.todo_promisc:
+            s.setsockopt(socket.SOL_CAN_J1939, socket.SO_J1939_PROMISC, 1)
+
+        if args.todo_broadcast:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+        if args.todo_prio >= 0:
+            s.setsockopt(
+                socket.SOL_CAN_J1939, socket.SO_J1939_SEND_PRIO, args.todo_prio
+            )
+
+        if not args.no_bind:
+            s.bind(sockname)
+
+            # if args.todo_rebind:
+            #     # rebind with actual SA
+
+        if args.todo_connect:
+            s.connect(peername)
+
+        if args.todo_send:
+            # initialize test vector
+            # Note: This takes the value mod 256 since the C implementation relies on unsigned integer semantics
+            dat = bytearray(
+                [(((2 * j) << 4) + ((2 * j + 1) & 0xF)) % 256 for j in range(128)]
+            )
+
+            # send data
+            # when using connect, do not provide additional
+            # destination information and use send()
+
+        # main loop
+        while args.todo_echo or args.todo_recv:
+            dat, peername = s.recvfrom(128)
+
+            if args.todo_recv:
+                ifname, name, pgn, addr = peername
+                print(f"{addr:02x} {pgn:05x}:", end="")
+
+                for i in range(len(dat)):
+                    if i != 0 and i % 8 == 0:
+                        print(f"\n{i:05X} ", end="")
+                    print(f" {dat[i]:02X}", end="")
+                print("")
