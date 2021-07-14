@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import argparse
 import socket
 
@@ -6,6 +8,51 @@ try:
     socket.SOL_CAN_J1939
 except AttributeError:
     socket.SOL_CAN_J1939 = socket.SOL_CAN_BASE + socket.CAN_J1939
+
+
+def parse_j1939_canaddr(string: str) -> Tuple[str, int, int, int]:
+    """Parses a canaddr string into a (ifname, name, pgn, addr) tuple
+
+    This should be equivalent to libj1939_parse_canaddr
+    """
+    index = string.find(":")
+    if index != -1:
+        ifname = string[0:index]
+        string = string[index + 1 :]
+    else:
+        ifname = string
+    can_ifindex = socket.if_nametoindex(ifname)
+
+    index = string.find(",")
+    if index != -1:
+        addr = int(string[0:index], 0)
+        string = string[index + 1 :]
+    elif len(string) != 0:
+        addr = int(string, 0)
+    else:
+        # This is the default value of the 'addr' member when the
+        # struct sockaddr_can is initialized
+        addr = socket.J1939_NO_ADDR
+
+    index = string.find(",")
+    if index != -1:
+        pgn = int(string[0:index], 0)
+        string = string[index + 1 :]
+    else:
+        # This is the default value of the 'pgn' member when the
+        # struct sockaddr_can is initialized
+        pgn = socket.J1939_NO_PGN
+
+    index = string.find(",")
+    if index != -1:
+        name = int(string[0:index], 0)
+    else:
+        # This is the default value of the 'name' member when the
+        # struct sockaddr_can is initialized
+        name = socket.J1939_NO_NAME
+
+    return (ifname, name, pgn, addr)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="demonstrate j1939 use")
@@ -67,11 +114,12 @@ if __name__ == "__main__":
         help="Return after TIME (default 1) seconds",
     )
 
+    parser.add_argument("from_addr", metavar="FROM", type=parse_j1939_canaddr)
+    parser.add_argument("to_addr", metavar="TO", nargs="?", type=parse_j1939_canaddr)
+
     args = parser.parse_args()
 
-    # TODO: Port over interface parsing
-    # For now, assume the interface is called 'vcan0'
-    sockname = "vcan0", socket.J1939_NO_NAME, socket.J1939_NO_PGN, 0x80
+    sockname = args.from_addr
 
     with socket.socket(socket.PF_CAN, socket.SOCK_DGRAM, socket.CAN_J1939) as s:
         if args.todo_promisc:
