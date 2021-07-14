@@ -1,6 +1,12 @@
 import argparse
 import socket
 
+# TODO: Should this be exposed in the stdlib as part of J1939 support?
+try:
+    socket.SOL_CAN_J1939
+except AttributeError:
+    socket.SOL_CAN_J1939 = socket.SOL_CAN_BASE + socket.CAN_J1939
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="demonstrate j1939 use")
     parser.add_argument(
