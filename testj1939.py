@@ -1,13 +1,19 @@
 from typing import Tuple
 
 import argparse
+import signal
 import socket
+import sys
 
 # TODO: Should this be exposed in the stdlib as part of J1939 support?
 try:
     socket.SOL_CAN_J1939
 except AttributeError:
     socket.SOL_CAN_J1939 = socket.SOL_CAN_BASE + socket.CAN_J1939
+
+
+def onsigalrm(signum, frame):
+    sys.exit()
 
 
 def parse_j1939_canaddr(string: str) -> Tuple[str, int, int, int]:
@@ -118,6 +124,10 @@ if __name__ == "__main__":
     parser.add_argument("to_addr", metavar="TO", nargs="?", type=parse_j1939_canaddr)
 
     args = parser.parse_args()
+
+    if args.todo_wait:
+        signal.signal(signal.SIGALRM, onsigalrm)
+        signal.alarm(args.todo_wait)
 
     sockname = args.from_addr
 
