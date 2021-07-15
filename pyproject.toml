@@ -1,0 +1,6 @@
+[tool.black]
+extend-exclude = '''
+/(
+  | test/libs/bats
+)/
+'''
