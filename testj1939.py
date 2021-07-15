@@ -27,6 +27,7 @@ def parse_j1939_canaddr(string: str) -> Tuple[str, int, int, int]:
         string = string[index + 1 :]
     else:
         ifname = string
+        string = ""
     can_ifindex = socket.if_nametoindex(ifname)
 
     index = string.find(",")
