@@ -15,14 +15,14 @@ setup() {
   sleep ${DELAY_TIME} && cansend ${CAN_IFACE_NAME} 1823ff40#0123 &
   run ${PYTHON_BIN} testj1939.py -w${WAIT_TIME} -B -r ${CAN_IFACE_NAME}
 
-  [ "$status" -eq 0 ]
-  [[ "$lines" =~ "40 02300: 01 23" ]]
+  assert_success
+  assert_output "40 02300: 01 23"
 }
 
 @test "receive with source address" {
   sleep ${DELAY_TIME} && cansend ${CAN_IFACE_NAME} 18238040#0123 &
   run ${PYTHON_BIN} testj1939.py -w${WAIT_TIME} -r ${CAN_IFACE_NAME}:0x80
 
-  [ "$status" -eq 0 ]
-  [[ "$lines" =~ "40 02300: 01 23" ]]
+  assert_success
+  assert_output "40 02300: 01 23"
 }
