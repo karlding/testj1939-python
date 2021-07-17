@@ -2,7 +2,7 @@
 # For now just diff output so the only dependency is on cansend/candump
 PYTHON_BIN=python3
 CAN_IFACE_NAME=vcan0
-DELAY_TIME=0.1s
+DELAY_TIME=1s
 WAIT_TIME=1
 WAIT_TIME_MILLIS=2000
 
