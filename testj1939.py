@@ -150,6 +150,7 @@ if __name__ == "__main__":
         signal.alarm(args.todo_wait)
 
     sockname = args.from_addr
+    peername = args.to_addr
 
     with socket.socket(socket.PF_CAN, socket.SOCK_DGRAM, socket.CAN_J1939) as s:
         if args.todo_promisc:
@@ -182,6 +183,10 @@ if __name__ == "__main__":
             # send data
             # when using connect, do not provide additional
             # destination information and use send()
+            if args.to_addr and not args.todo_connect:
+                s.sendto(dat[0 : args.todo_send], peername)
+            else:
+                s.send(dat[0 : args.todo_send], 0)
 
         # main loop
         while args.todo_echo or args.todo_recv:

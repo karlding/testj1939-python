@@ -26,3 +26,15 @@ setup() {
   assert_success
   assert_output "40 02300: 01 23"
 }
+
+@test "send" {
+  # TODO: this should be '-s' instead of '-s8', but that requires some
+  # argparse setup to propery parse the positional arguments after.
+  #
+  # For now, just use '-s8'
+  sleep ${DELAY_TIME} && ${PYTHON_BIN} testj1939.py -w${WAIT_TIME} -B -s8 ${CAN_IFACE_NAME}:0x80 ${CAN_IFACE_NAME}:,0x3ffff &
+  run candump -T${WAIT_TIME_MILLIS} -L ${CAN_IFACE_NAME}
+
+  assert_success
+  assert_output --partial "1BFFFF80#0123456789ABCDEF"
+}
