@@ -6,6 +6,11 @@ DELAY_TIME=0.1s
 WAIT_TIME=1
 WAIT_TIME_MILLIS=2000
 
+setup() {
+  load 'libs/test_helper/bats-support/load'
+  load 'libs/test_helper/bats-assert/load'
+}
+
 @test "receive without source address" {
   sleep ${DELAY_TIME} && cansend ${CAN_IFACE_NAME} 1823ff40#0123 &
   run ${PYTHON_BIN} testj1939.py -w${WAIT_TIME} -B -r ${CAN_IFACE_NAME}
