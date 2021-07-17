@@ -32,10 +32,16 @@ def parse_j1939_canaddr(string: str) -> Tuple[str, int, int, int]:
 
     index = string.find(",")
     if index != -1:
-        addr = int(string[0:index], 0)
+        if len(string[0:index]) == 0:
+            # This is the default value of the 'addr' member when the
+            # struct sockaddr_can is initialized
+            addr = socket.J1939_NO_ADDR
+        else:
+            addr = int(string[0:index], 0)
         string = string[index + 1 :]
     elif len(string) != 0:
         addr = int(string, 0)
+        string = ""
     else:
         # This is the default value of the 'addr' member when the
         # struct sockaddr_can is initialized
@@ -43,8 +49,16 @@ def parse_j1939_canaddr(string: str) -> Tuple[str, int, int, int]:
 
     index = string.find(",")
     if index != -1:
-        pgn = int(string[0:index], 0)
+        if len(string[0:index]) == 0:
+            # This is the default value of the 'pgn' member when the
+            # struct sockaddr_can is initialized
+            pgn = socket.J1939_NO_PGN
+        else:
+            pgn = int(string[0:index], 0)
         string = string[index + 1 :]
+    elif len(string) != 0:
+        pgn = int(string, 0)
+        string = ""
     else:
         # This is the default value of the 'pgn' member when the
         # struct sockaddr_can is initialized
@@ -52,7 +66,12 @@ def parse_j1939_canaddr(string: str) -> Tuple[str, int, int, int]:
 
     index = string.find(",")
     if index != -1:
-        name = int(string[0:index], 0)
+        if len(string[0:index]) == 0:
+            # This is the default value of the 'name' member when the
+            # struct sockaddr_can is initialized
+            name = socket.J1939_NO_NAME
+        else:
+            name = int(string[0:index], 0)
     else:
         # This is the default value of the 'name' member when the
         # struct sockaddr_can is initialized
