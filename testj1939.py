@@ -196,8 +196,8 @@ if __name__ == "__main__":
                 ifname, name, pgn, addr = peername
                 print(f"{addr:02x} {pgn:05x}:", end="")
 
-                for i in range(len(dat)):
+                for i, byte in enumerate(dat):
                     if i != 0 and i % 8 == 0:
-                        print(f"\n{i:05X} ", end="")
-                    print(f" {dat[i]:02X}", end="")
+                        print(f"\n{i:05x}    ", end="")
+                    print(f" {byte:02x}", end="")
                 print("")

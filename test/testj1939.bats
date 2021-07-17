@@ -112,3 +112,14 @@ setup() {
   assert_output --partial "18EBFF80#02EF0123456789AB"
   assert_output --partial "18EBFF80#03CDEF01234567FF"
 }
+
+@test "Larger packets: using testj1939 to receive" {
+  # TODO: Fix the shorthand parsing of interface names
+  sleep ${DELAY_TIME} && ${PYTHON_BIN} testj1939.py -w${WAIT_TIME} -s20 ${CAN_IFACE_NAME}:0x80 ${CAN_IFACE_NAME}:0x90,0x12300 &
+  run ${PYTHON_BIN} testj1939.py -w${WAIT_TIME} ${CAN_IFACE_NAME}:0x90 -r
+
+  assert_success
+  assert_output --partial "80 12300: 01 23 45 67 89 ab cd ef"
+  assert_output --partial "00008     01 23 45 67 89 ab cd ef"
+  assert_output --partial "00010     01 23 45 67"
+}
