@@ -123,3 +123,14 @@ setup() {
   assert_output --partial "00008     01 23 45 67 89 ab cd ef"
   assert_output --partial "00010     01 23 45 67"
 }
+
+# These tests are not covered in the J1939 kickstart guide
+@test "echo" {
+  ${PYTHON_BIN} testj1939.py -w${WAIT_TIME} -e ${CAN_IFACE_NAME}:0x90 &
+  run ${PYTHON_BIN} testj1939.py -w${WAIT_TIME} -s20 -r ${CAN_IFACE_NAME}:0x80 ${CAN_IFACE_NAME}:0x90,0x12300
+
+  assert_success
+  assert_output --partial "90 12300: 01 23 45 67 89 ab cd ef"
+  assert_output --partial "00008     01 23 45 67 89 ab cd ef"
+  assert_output --partial "00010     01 23 45 67"
+}

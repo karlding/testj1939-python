@@ -192,6 +192,9 @@ if __name__ == "__main__":
         while args.todo_echo or args.todo_recv:
             dat, peername = s.recvfrom(128)
 
+            if args.todo_echo:
+                s.sendto(dat, peername)
+
             if args.todo_recv:
                 ifname, name, pgn, addr = peername
                 print(f"{addr:02x} {pgn:05x}:", end="")
