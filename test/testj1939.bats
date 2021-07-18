@@ -134,3 +134,20 @@ setup() {
   assert_output --partial "00008     01 23 45 67 89 ab cd ef"
   assert_output --partial "00010     01 23 45 67"
 }
+
+# TODO: Make this more robust. For now, we order this at the end of the tests
+# since running this in the middle causes failures in tests that follow.
+@test "Larger packets: flow control" {
+  # TODO: Fix the shorthand parsing of interface names
+  sleep ${DELAY_TIME} && ${PYTHON_BIN} testj1939.py -w${WAIT_TIME} ${CAN_IFACE_NAME}:0x90 -r &
+  sleep ${DELAY_TIME} && ${PYTHON_BIN} testj1939.py -w${WAIT_TIME} -s20 ${CAN_IFACE_NAME}:0x80 ${CAN_IFACE_NAME}:0x90,0x12300 &
+  run candump -T${WAIT_TIME_MILLIS} -L ${CAN_IFACE_NAME}
+
+  assert_success
+  assert_output --partial "18EC9080#1014000303002301"
+  assert_output --partial "18EC8090#110301FFFF002301"
+  assert_output --partial "18EB9080#010123456789ABCD"
+  assert_output --partial "18EB9080#02EF0123456789AB"
+  assert_output --partial "18EB9080#03CDEF01234567FF"
+  assert_output --partial "18EC8090#13140003FF002301"
+}
